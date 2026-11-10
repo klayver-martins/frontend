@@ -9,7 +9,7 @@ export function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleLogout() {
+  /* async function handleLogout() {
     setIsLoading(true);
     setError(null);
 
@@ -35,13 +35,13 @@ export function LogoutButton() {
     } finally {
       setIsLoading(false);
     }
-  }
+  } */
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={handleLogout}
+        onClick={() => {}}
         disabled={isLoading}
         title="Sair"
         aria-label="Sair da conta"
