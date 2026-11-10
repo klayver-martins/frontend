@@ -5,7 +5,7 @@ interface ApiErrorResponse {
 }
 
 export async function loginUser(data: LoginFormData): Promise<void> {
-  const apiUrl = process.env.API_URL_BACKEND;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   console.log(apiUrl);
 
   if (!apiUrl) {

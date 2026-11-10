@@ -4,10 +4,10 @@ export interface ProductDashboard {
   inactiveProducts: number;
 }
 
-const API_URL_BACKEND = process.env.API_URL_BACKEND;
+const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getProductDashboardService(): Promise<ProductDashboard> {
-  const response = await fetch(`${API_URL_BACKEND}/products/dashboard`, {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/products/dashboard`, {
     method: 'GET',
     credentials: 'include',
     headers: {
