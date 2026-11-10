@@ -36,7 +36,7 @@ export function LoginForm() {
       router.refresh();
 
       // Redireciona para o dashboard.
-      router.replace('/home');
+      router.push('/home');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ocorreu um erro ao realizar o login.');
     }
