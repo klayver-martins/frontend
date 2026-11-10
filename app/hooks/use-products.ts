@@ -10,7 +10,7 @@ import {
   updateProductService,
 } from '@/app/services/product/product-service';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.API_URL;
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);

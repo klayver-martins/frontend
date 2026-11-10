@@ -3,7 +3,7 @@ export function getProductPhotoUrl(photo: string | null | undefined): string | n
     return null;
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.API_URL;
 
   if (!apiUrl) {
     return null;

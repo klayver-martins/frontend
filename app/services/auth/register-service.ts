@@ -5,7 +5,7 @@ interface ApiErrorResponse {
 }
 
 export async function registerUser(data: RegisterFormData): Promise<void> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.API_URL;
 
   if (!apiUrl) {
     throw new Error('A URL da API não foi configurada.');
