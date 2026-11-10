@@ -20,7 +20,7 @@
   --muted-foreground: #a1a1aa;
 
   --border: #3f3f46;
-  --input: #27272a;
+  --input: #3f3f46;
 
   --destructive: #ef4444;
 }
@@ -29,23 +29,23 @@
 :root[data-mode='light'] {
   color-scheme: light;
 
-  --background: #ffffff;
-  --foreground: #09090b;
+  --background: #f1f3f9;
+  --foreground: #18181b;
 
-  --card: #f4f4f5;
-  --card-foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
 
   --primary: #4f46e5;
   --primary-foreground: #ffffff;
 
-  --secondary: #e4e4e7;
+  --secondary: #e8eaf2;
   --secondary-foreground: #27272a;
 
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted: #e9ebf2;
+  --muted-foreground: #52525b;
 
-  --border: #e4e4e7;
-  --input: #e4e4e7;
+  --border: #d4d7e2;
+  --input: #cbd0dc;
 
   --destructive: #dc2626;
 }

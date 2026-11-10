@@ -1,4 +1,5 @@
 import { ToastProvider } from '@/app/components/toast-provider';
+import { ThemeProvider } from '@/app/providers/theme-provider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -27,8 +28,10 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ToastProvider />
-        {children}
+        <ThemeProvider>
+          <ToastProvider />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
