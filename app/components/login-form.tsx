@@ -33,7 +33,7 @@ export function LoginForm() {
 
       toast.success('Login realizado com sucesso!');
 
-      router.replace('/');
+      router.replace('/home');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ocorreu um erro ao realizar o login.');
     }
