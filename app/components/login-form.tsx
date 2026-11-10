@@ -6,10 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
-import { loginSchema, type LoginFormData } from '@/app/schemas/login-schema';
-
 import { InputEmail } from '@/app/components/input-email';
 import { InputPassword } from '@/app/components/input-password';
+import { loginSchema, type LoginFormData } from '@/app/schemas/login-schema';
 import { loginUser } from '@/app/services/auth/login-service';
 
 export function LoginForm() {
@@ -33,6 +32,10 @@ export function LoginForm() {
 
       toast.success('Login realizado com sucesso!');
 
+      // Atualiza os dados do servidor e os cookies da sessão.
+      router.refresh();
+
+      // Redireciona para o dashboard.
       router.replace('/home');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ocorreu um erro ao realizar o login.');
@@ -41,7 +44,6 @@ export function LoginForm() {
 
   return (
     <div className="w-full rounded-2xl border border-border bg-card p-8 text-card-foreground shadow-2xl sm:p-10">
-      {/* Header */}
       <div className="mb-8 space-y-3">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Bem-vindo de volta</h1>
 
@@ -50,13 +52,11 @@ export function LoginForm() {
         </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <InputEmail registration={register('email')} error={errors.email?.message} />
 
         <InputPassword registration={register('password')} error={errors.password?.message} />
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
@@ -79,7 +79,6 @@ export function LoginForm() {
         </button>
       </form>
 
-      {/* Footer */}
       <div className="mt-8 border-t border-border pt-6 text-center">
         <p className="text-sm text-muted-foreground">
           Ainda não tem uma conta?{' '}
