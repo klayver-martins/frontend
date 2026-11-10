@@ -14,7 +14,7 @@ export function LogoutButton() {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.API_URL}/auth/logout`, {
+      const response = await fetch(`${process.env.API_URL_BACKEND}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
         headers: {

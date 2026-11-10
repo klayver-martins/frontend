@@ -1,14 +1,14 @@
 import { productSchema, type Product } from '@/app/schemas/product-schema';
 import z from 'zod';
 
-const API_URL = process.env.API_URL;
+const API_URL_BACKEND = process.env.API_URL_BACKEND;
 
 function getApiUrl() {
-  if (!API_URL) {
+  if (!API_URL_BACKEND) {
     throw new Error('URL da API não configurada.');
   }
 
-  return API_URL;
+  return API_URL_BACKEND;
 }
 
 async function getErrorMessage(response: Response): Promise<string> {

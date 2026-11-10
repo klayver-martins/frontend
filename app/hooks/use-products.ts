@@ -10,7 +10,7 @@ import {
   updateProductService,
 } from '@/app/services/product/product-service';
 
-const API_URL = process.env.API_URL;
+const API_URL_BACKEND = process.env.API_URL_BACKEND;
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -68,7 +68,7 @@ export function useProducts() {
       await updateProductService(id, formData);
 
       if (status !== undefined) {
-        const response = await fetch(`${API_URL}/products/${id}`, {
+        const response = await fetch(`${API_URL_BACKEND}/products/${id}`, {
           method: 'PUT',
           credentials: 'include',
           headers: {

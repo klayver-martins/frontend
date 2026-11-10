@@ -1,7 +1,7 @@
 import { profileSchema, type Profile } from '@/app/schemas/profile-schema';
 
 export async function getProfileService(): Promise<Profile> {
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.API_URL_BACKEND;
 
   if (!apiUrl) {
     throw new Error('URL da API não configurada.');

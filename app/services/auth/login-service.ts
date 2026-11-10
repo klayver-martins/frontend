@@ -5,7 +5,8 @@ interface ApiErrorResponse {
 }
 
 export async function loginUser(data: LoginFormData): Promise<void> {
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.API_URL_BACKEND;
+  console.log(apiUrl);
 
   if (!apiUrl) {
     throw new Error('A URL da API não foi configurada.');
