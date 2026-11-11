@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { apiFetch } from '@/app/services/api-client';
 
 import type { Product } from '@/app/schemas/product-schema';
 import {
@@ -9,8 +10,6 @@ import {
   getProductsService,
   updateProductService,
 } from '@/app/services/product/product-service';
-
-const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -68,9 +67,8 @@ export function useProducts() {
       await updateProductService(id, formData);
 
       if (status !== undefined) {
-        const response = await fetch(`${NEXT_PUBLIC_API_URL}/products/${id}`, {
+        const response = await apiFetch(`/products/${id}`, {
           method: 'PUT',
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',

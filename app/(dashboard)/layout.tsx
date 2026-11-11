@@ -1,5 +1,4 @@
-'use client';
-
+import { AuthGuard } from '@/app/components/auth-guard';
 import { DashboardContent } from '@/app/components/dashboard-content';
 import { Header } from '@/app/components/header';
 import { Sidebar } from '@/app/components/sidebar';
@@ -14,11 +13,9 @@ function DashboardLayoutContent({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-
       <DashboardContent>
         <div className="min-h-screen min-w-0">
           <Header />
-
           <main className="px-5 py-6 sm:px-8">{children}</main>
         </div>
       </DashboardContent>
@@ -28,8 +25,10 @@ function DashboardLayoutContent({ children }: { children: ReactNode }) {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
-    <SidebarProvider>
-      <DashboardLayoutContent>{children}</DashboardLayoutContent>
-    </SidebarProvider>
+    <AuthGuard>
+      <SidebarProvider>
+        <DashboardLayoutContent>{children}</DashboardLayoutContent>
+      </SidebarProvider>
+    </AuthGuard>
   );
 }
