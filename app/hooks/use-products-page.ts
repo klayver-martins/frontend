@@ -1,9 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 
 import { useProducts } from '@/app/hooks/use-products';
 import type { Product } from '@/app/schemas/product-schema';
+import { deleteProductService } from '@/app/services/product/product-service';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -23,6 +25,13 @@ export function useProductsPage() {
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [deleteProgress, setDeleteProgress] = useState<{
+    completed: number;
+    total: number;
+  } | null>(null);
+  const [bulkDeleteError, setBulkDeleteError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,6 +64,9 @@ export function useProductsPage() {
   const firstItem = filteredProducts.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
 
   const lastItem = Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length);
+  const isAllFilteredProductsSelected =
+    filteredProducts.length > 0 &&
+    filteredProducts.every(product => selectedProductIds.includes(product.id));
 
   function handleSearch(value: string) {
     setSearch(value);
@@ -137,6 +149,8 @@ export function useProductsPage() {
       await deleteProduct(productToDelete.id);
 
       setProductToDelete(null);
+      setSelectedProductIds(previous => previous.filter(id => id !== productToDelete.id));
+      toast.success('Produto excluído com sucesso.');
 
       const remainingItems = filteredProducts.length - 1;
       const lastPage = Math.max(1, Math.ceil(remainingItems / ITEMS_PER_PAGE));
@@ -145,11 +159,127 @@ export function useProductsPage() {
         setCurrentPage(lastPage);
       }
     } catch (error) {
-      setActionError(
-        error instanceof Error ? error.message : 'Não foi possível excluir o produto.',
-      );
+      const message =
+        error instanceof Error ? error.message : 'Não foi possível excluir o produto.';
+
+      setActionError(message);
+      toast.error(message);
     } finally {
       setIsDeleting(false);
+    }
+  }
+
+  function toggleProductSelection(productId: number) {
+    setSelectedProductIds(previous =>
+      previous.includes(productId)
+        ? previous.filter(id => id !== productId)
+        : [...previous, productId],
+    );
+  }
+
+  function toggleAllFilteredProducts() {
+    const filteredIds = filteredProducts.map(product => product.id);
+
+    setSelectedProductIds(previous =>
+      isAllFilteredProductsSelected
+        ? previous.filter(id => !filteredIds.includes(id))
+        : [...new Set([...previous, ...filteredIds])],
+    );
+  }
+
+  function openBulkDeleteModal() {
+    if (selectedProductIds.length === 0) {
+      return;
+    }
+
+    setBulkDeleteError(null);
+    setDeleteProgress(null);
+    setIsBulkDeleteModalOpen(true);
+  }
+
+  function closeBulkDeleteModal() {
+    if (isDeleting) {
+      return;
+    }
+
+    setIsBulkDeleteModalOpen(false);
+    setBulkDeleteError(null);
+    setDeleteProgress(null);
+  }
+
+  async function handleBulkDelete() {
+    const idsToDelete = [...selectedProductIds];
+
+    if (idsToDelete.length === 0) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setBulkDeleteError(null);
+    setDeleteProgress({ completed: 0, total: idsToDelete.length });
+
+    const deletedIds: number[] = [];
+    const errors: string[] = [];
+
+    try {
+      for (const [index, id] of idsToDelete.entries()) {
+        try {
+          await deleteProductService(id);
+          deletedIds.push(id);
+        } catch (error) {
+          const product = products.find(item => item.id === id);
+          const productName = product ? `${product.description} (${product.code})` : `ID ${id}`;
+          const message =
+            error instanceof Error ? error.message : 'Não foi possível excluir o produto.';
+
+          errors.push(`${productName}: ${message}`);
+        } finally {
+          setDeleteProgress({ completed: index + 1, total: idsToDelete.length });
+        }
+      }
+
+      if (deletedIds.length > 0) {
+        reloadProducts();
+        setSelectedProductIds(idsToDelete.filter(id => !deletedIds.includes(id)));
+
+        const deletedFilteredCount = deletedIds.filter(id =>
+          filteredProducts.some(product => product.id === id),
+        ).length;
+        const remainingItems = Math.max(0, filteredProducts.length - deletedFilteredCount);
+        const lastPage = Math.max(1, Math.ceil(remainingItems / ITEMS_PER_PAGE));
+
+        setCurrentPage(previous => Math.min(previous, lastPage));
+      }
+
+      if (errors.length > 0) {
+        const failedProductsLabel = errors.length === 1 ? 'produto' : 'produtos';
+
+        setBulkDeleteError(
+          `Não foi possível excluir ${errors.length} ${failedProductsLabel}: ${errors.join('; ')}`,
+        );
+
+        if (deletedIds.length > 0) {
+          toast.success(
+            deletedIds.length === 1
+              ? '1 produto excluído com sucesso.'
+              : `${deletedIds.length} produtos excluídos com sucesso.`,
+          );
+        }
+
+        toast.error(
+          `Não foi possível excluir ${errors.length} ${failedProductsLabel}. Confira os detalhes.`,
+        );
+      } else {
+        setIsBulkDeleteModalOpen(false);
+        toast.success(
+          deletedIds.length === 1
+            ? '1 produto excluído com sucesso.'
+            : `${deletedIds.length} produtos excluídos com sucesso.`,
+        );
+      }
+    } finally {
+      setIsDeleting(false);
+      setDeleteProgress(null);
     }
   }
 
@@ -173,6 +303,12 @@ export function useProductsPage() {
 
     selectedProduct,
     productToDelete,
+    selectedProductIds,
+    selectedProductsCount: selectedProductIds.length,
+    isAllFilteredProductsSelected,
+    isBulkDeleteModalOpen,
+    deleteProgress,
+    bulkDeleteError,
 
     isModalOpen,
     isSubmitting,
@@ -187,5 +323,10 @@ export function useProductsPage() {
     openDeleteModal,
     closeDeleteModal,
     handleDelete,
+    toggleProductSelection,
+    toggleAllFilteredProducts,
+    openBulkDeleteModal,
+    closeBulkDeleteModal,
+    handleBulkDelete,
   };
 }

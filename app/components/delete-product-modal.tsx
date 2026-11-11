@@ -5,18 +5,28 @@ import { AlertTriangle, LoaderCircle, Trash2, X } from 'lucide-react';
 import type { Product } from '@/app/schemas/product-schema';
 
 interface DeleteProductModalProps {
-  product: Product;
+  product: Product | null;
+  count?: number;
   isDeleting: boolean;
+  progress?: { completed: number; total: number } | null;
+  error?: string | null;
   onClose: () => void;
   onConfirm: () => Promise<void>;
 }
 
 export function DeleteProductModal({
   product,
+  count = 1,
   isDeleting,
+  progress = null,
+  error = null,
   onClose,
   onConfirm,
 }: DeleteProductModalProps) {
+  const isBulkDelete = count > 1 || !product;
+  const productLabel = count === 1 ? 'produto' : 'produtos';
+  const selectedProductLabel = count === 1 ? 'produto selecionado' : 'produtos selecionados';
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
@@ -51,14 +61,16 @@ export function DeleteProductModal({
 
         <div className="space-y-2 px-6 pb-6">
           <h2 id="delete-product-title" className="text-lg font-semibold text-card-foreground">
-            Excluir produto?
+            {isBulkDelete ? 'Excluir produtos?' : 'Excluir produto?'}
           </h2>
 
           <p
             id="delete-product-description"
             className="text-sm leading-relaxed text-muted-foreground"
           >
-            Você está prestes a excluir este produto. Essa ação não poderá ser desfeita.
+            {isBulkDelete
+              ? `Você está prestes a excluir ${count} ${productLabel}. Essa ação não poderá ser desfeita.`
+              : 'Você está prestes a excluir este produto. Essa ação não poderá ser desfeita.'}
           </p>
 
           <div className="mt-5 flex items-center gap-3 rounded-xl border border-border bg-muted/40 p-4">
@@ -66,14 +78,37 @@ export function DeleteProductModal({
               <Trash2 size={19} />
             </div>
 
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-card-foreground">
-                {product.description}
-              </p>
+            {isBulkDelete ? (
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-card-foreground">
+                  {count} {selectedProductLabel}
+                </p>
 
-              <p className="mt-1 text-xs text-muted-foreground">Código: {product.code}</p>
-            </div>
+                {progress && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Apagando {Math.min(progress.completed + 1, progress.total)} de {progress.total}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-card-foreground">
+                  {product.description}
+                </p>
+
+                <p className="mt-1 text-xs text-muted-foreground">Código: {product.code}</p>
+              </div>
+            )}
           </div>
+
+          {error && (
+            <p
+              role="alert"
+              className="mt-4 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col-reverse gap-3 border-t border-border bg-muted/20 px-6 py-4 sm:flex-row sm:justify-end">
@@ -95,12 +130,14 @@ export function DeleteProductModal({
             {isDeleting ? (
               <>
                 <LoaderCircle size={16} className="animate-spin" />
-                Excluindo...
+                {progress
+                  ? `Apagando ${Math.min(progress.completed + 1, progress.total)} de ${progress.total}...`
+                  : 'Excluindo...'}
               </>
             ) : (
               <>
                 <Trash2 size={16} />
-                Excluir produto
+                {isBulkDelete ? `Excluir ${count} ${productLabel}` : 'Excluir produto'}
               </>
             )}
           </button>
