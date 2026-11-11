@@ -21,6 +21,7 @@ export async function getProductsService(): Promise<Product[]> {
   const response = await apiFetch('/products', {
     method: 'GET',
     headers: { Accept: 'application/json' },
+    credentials: 'include',
   });
 
   if (!response.ok) throw new Error(await getErrorMessage(response));
@@ -37,6 +38,7 @@ export async function createProductService(formData: FormData): Promise<void> {
   const response = await apiFetch('/products', {
     method: 'POST',
     body: formData,
+    credentials: 'include',
   });
 
   if (!response.ok) throw new Error(await getErrorMessage(response));
@@ -46,6 +48,7 @@ export async function updateProductService(id: number, formData: FormData): Prom
   const response = await apiFetch(`/products/${id}`, {
     method: 'PUT',
     body: formData,
+    credentials: 'include',
   });
 
   if (!response.ok) throw new Error(await getErrorMessage(response));
@@ -54,6 +57,7 @@ export async function updateProductService(id: number, formData: FormData): Prom
 export async function deleteProductService(id: number): Promise<void> {
   const response = await apiFetch(`/products/${id}`, {
     method: 'DELETE',
+    credentials: 'include',
   });
 
   if (!response.ok) throw new Error(await getErrorMessage(response));

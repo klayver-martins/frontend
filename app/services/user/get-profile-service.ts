@@ -5,6 +5,7 @@ export async function getProfileService(): Promise<Profile> {
   const response = await apiFetch('/users/me', {
     method: 'GET',
     headers: { Accept: 'application/json' },
+    credentials: 'include',
   });
 
   const data: unknown = await response.json().catch(() => null);
