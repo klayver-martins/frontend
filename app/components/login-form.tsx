@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -11,6 +12,8 @@ import { loginSchema, type LoginFormData } from '@/app/schemas/login-schema';
 import { loginUser } from '@/app/services/auth/login-service';
 
 export function LoginForm() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -24,9 +27,7 @@ export function LoginForm() {
     try {
       await loginUser(data);
       toast.success('Login realizado com sucesso!');
-      // A navegação completa garante que a próxima página valide a sessão
-      // já com os cookies HTTP-only recebidos pela API.
-      window.location.replace('/home');
+      router.replace('/home');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ocorreu um erro ao realizar o login.');
     }
