@@ -7,7 +7,8 @@ function getApiUrl(path: string) {
     throw new Error('URL da API não configurada.');
   }
 
-  return `${apiBaseUrl.replace(/\\/$/, '')}${path.startsWith('/') ? path : `/${path}`}`;
+  const normalizedBaseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+  return `${normalizedBaseUrl}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
 async function refreshSession(): Promise<boolean> {
