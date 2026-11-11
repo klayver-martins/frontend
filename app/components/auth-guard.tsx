@@ -1,18 +1,27 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { getProfileService } from '@/app/services/user/get-profile-service';
+import { SESSION_EXPIRED_EVENT } from '@/app/services/api-client';
 
 interface AuthGuardProps {
   children: ReactNode;
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     let active = true;
+
+    const handleSessionExpired = () => {
+      router.replace('/login');
+    };
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
 
     async function validateSession() {
       try {
@@ -22,8 +31,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
           setIsAuthenticated(true);
         }
       } catch {
-        if (active && window.location.pathname !== '/login') {
-          window.location.replace('/login');
+        if (active) {
+          router.replace('/login');
         }
       }
     }
@@ -32,8 +41,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     return () => {
       active = false;
+      window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
     };
-  }, []);
+  }, [router]);
 
   if (!isAuthenticated) {
     return (
