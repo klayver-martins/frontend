@@ -1,13 +1,8 @@
 import { profileSchema, type Profile } from '@/app/schemas/profile-schema';
-import { apiFetch } from '@/app/services/api-client';
+import { api } from '@/app/services/api';
 
 export async function getProfileService(): Promise<Profile> {
-  const response = await apiFetch('/users/me', {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-    credentials: 'include',
-  });
-
+  const response = await api.get('/users/me');
   const data: unknown = await response.json().catch(() => null);
 
   if (!response.ok) {
