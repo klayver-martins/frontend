@@ -10,6 +10,7 @@ export async function getProductDashboardService(): Promise<ProductDashboard> {
   const response = await apiFetch('/products/dashboard', {
     method: 'GET',
     headers: { Accept: 'application/json' },
+    credentials: 'include',
   });
 
   const data = await response.json().catch(() => null);
