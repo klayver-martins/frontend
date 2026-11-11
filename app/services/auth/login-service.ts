@@ -1,22 +1,17 @@
 import type { LoginFormData } from '@/app/schemas/login-schema';
+import { apiFetch } from '@/app/services/api-client';
 
 interface ApiErrorResponse {
   message?: string;
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
 export async function loginUser(data: LoginFormData): Promise<void> {
-  if (!apiUrl) {
-    throw new Error('A URL da API não foi configurada.');
-  }
-
-  const response = await fetch(`${apiUrl}/auth/login`, {
+  const response = await apiFetch('/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify(data),
   });
 

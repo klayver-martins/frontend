@@ -31,9 +31,7 @@ export function LoginForm() {
       await loginUser(data);
 
       toast.success('Login realizado com sucesso!');
-
       router.replace('/home');
-      router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ocorreu um erro ao realizar o login.');
     }

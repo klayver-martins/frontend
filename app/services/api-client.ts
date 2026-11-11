@@ -1,24 +1,23 @@
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+export const SESSION_EXPIRED_EVENT = 'auth:session-expired';
 
 let refreshRequest: Promise<boolean> | null = null;
 
 function getApiUrl(path: string) {
-  if (!apiBaseUrl) {
-    throw new Error('URL da API não configurada.');
-  }
+  return `/api${path.startsWith('/') ? path : `/${path}`}`;
+}
 
-  const normalizedBaseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
-  return `${normalizedBaseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+function notifySessionExpired() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+  }
 }
 
 async function refreshSession(): Promise<boolean> {
   if (!refreshRequest) {
     refreshRequest = fetch(getApiUrl('/auth/refresh'), {
       method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-      },
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
       cache: 'no-store',
     })
       .then(response => response.ok)
@@ -32,22 +31,25 @@ async function refreshSession(): Promise<boolean> {
 }
 
 /**
- * Faz chamadas autenticadas usando cookies HTTP-only.
- * Em caso de access token expirado, renova a sessão uma única vez
- * e repete a requisição original.
+ * Usa sempre o proxy do próprio domínio do frontend.
+ * Assim, o navegador armazena os cookies HTTP-only no domínio do frontend,
+ * sem depender de cookies de terceiros entre Vercel e o host da API.
  */
 export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const requestInit: RequestInit = {
     ...init,
-    credentials: 'include',
+    credentials: 'same-origin',
     cache: init.cache ?? 'no-store',
   };
 
   const response = await fetch(getApiUrl(path), requestInit);
 
-  const isAuthEndpoint = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'].some(
-    endpoint => path === endpoint,
-  );
+  const isAuthEndpoint = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/refresh',
+    '/auth/logout',
+  ].some(endpoint => path === endpoint);
 
   if (response.status !== 401 || isAuthEndpoint) {
     return response;
@@ -56,12 +58,15 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   const refreshed = await refreshSession();
 
   if (!refreshed) {
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      window.location.replace('/login');
-    }
-
+    notifySessionExpired();
     return response;
   }
 
-  return fetch(getApiUrl(path), requestInit);
+  const retryResponse = await fetch(getApiUrl(path), requestInit);
+
+  if (retryResponse.status === 401) {
+    notifySessionExpired();
+  }
+
+  return retryResponse;
 }
