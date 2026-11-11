@@ -1,4 +1,4 @@
-import { apiFetch } from '@/app/services/api-client';
+import { api } from '@/app/services/api';
 
 export interface ProductDashboard {
   totalProducts: number;
@@ -7,12 +7,7 @@ export interface ProductDashboard {
 }
 
 export async function getProductDashboardService(): Promise<ProductDashboard> {
-  const response = await apiFetch('/products/dashboard', {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-    credentials: 'include',
-  });
-
+  const response = await api.get('/products/dashboard');
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
