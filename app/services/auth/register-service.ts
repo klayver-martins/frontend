@@ -1,19 +1,12 @@
 import type { RegisterFormData } from '@/app/schemas/register-schema';
-import { apiFetch } from '@/app/services/api-client';
+import { api } from '@/app/services/api';
 
 interface ApiErrorResponse {
   message?: string;
 }
 
 export async function registerUser(data: RegisterFormData): Promise<void> {
-  const response = await apiFetch('/auth/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  const response = await api.post('/auth/register', data);
 
   if (!response.ok) {
     const result = (await response.json().catch(() => null)) as ApiErrorResponse | null;
