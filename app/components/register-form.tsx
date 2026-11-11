@@ -48,13 +48,13 @@ export function RegisterForm() {
       });
 
       toast.success('Conta criada com sucesso! Bem-vindo!');
-      router.replace('/');
+      window.location.replace('/home');
     } catch {
       toast.warning(
         'Sua conta foi criada, mas não foi possível entrar automaticamente. Faça login para continuar.',
       );
 
-      router.replace('/login');
+      window.location.replace('/login');
     }
   }
 
