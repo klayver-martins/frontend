@@ -3,7 +3,6 @@
 import {
   ChevronLeft,
   ChevronRight,
-  Image as ImageIcon,
   Package,
   Pencil,
   Plus,
@@ -12,45 +11,12 @@ import {
   Trash2,
 } from 'lucide-react';
 
+import { ProductPhoto } from '@/app/(dashboard)/products/product-photo';
 import { DeleteProductModal } from '@/app/components/delete-product-modal';
 import { ProductModal } from '@/app/components/product-modal';
 import { useProductsPage } from '@/app/hooks/use-products-page';
-import { getProductPhotoUrl } from '@/app/utils/get-product-photo-url';
 
 const ITEMS_PER_PAGE = 10;
-
-function ProductPhoto({
-  photo,
-  code,
-  className,
-  iconSize,
-}: {
-  photo?: string | null;
-  code: string;
-  className: string;
-  iconSize: number;
-}) {
-  const photoUrl = getProductPhotoUrl(photo);
-
-  if (photoUrl) {
-    return (
-      <img
-        src={photoUrl}
-        alt={`Foto do produto ${code}`}
-        loading="lazy"
-        className={className}
-      />
-    );
-  }
-
-  return (
-    <div
-      className={`${className} flex items-center justify-center border border-border bg-muted text-muted-foreground`}
-    >
-      <ImageIcon size={iconSize} />
-    </div>
-  );
-}
 
 export default function ProductsClient() {
   const {
@@ -221,7 +187,9 @@ export default function ProductsClient() {
               <div className="flex flex-col items-center justify-center px-5 py-12 text-center sm:py-14">
                 <Package size={30} className="mb-3 text-muted-foreground" />
 
-                <p className="text-sm font-medium text-card-foreground">Nenhum produto encontrado</p>
+                <p className="text-sm font-medium text-card-foreground">
+                  Nenhum produto encontrado
+                </p>
 
                 <p className="mt-1 text-sm text-muted-foreground">
                   {search
@@ -232,76 +200,74 @@ export default function ProductsClient() {
             ) : (
               <>
                 <div className="divide-y divide-border xl:hidden">
-                  {paginatedProducts.map(product => {
-                    return (
-                      <article key={product.id} className="p-4 sm:p-5">
-                        <div className="flex items-start gap-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedProductIds.includes(product.id)}
-                            onChange={() => toggleProductSelection(product.id)}
-                            disabled={isDeleting}
-                            aria-label={`Selecionar ${product.description}`}
-                            className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed"
-                          />
+                  {paginatedProducts.map(product => (
+                    <article key={product.id} className="p-4 sm:p-5">
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedProductIds.includes(product.id)}
+                          onChange={() => toggleProductSelection(product.id)}
+                          disabled={isDeleting}
+                          aria-label={`Selecionar ${product.description}`}
+                          className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed"
+                        />
 
-                          <ProductPhoto
-                            photo={product.photo}
-                            code={product.code}
-                            className="h-14 w-14 shrink-0 rounded-lg border border-border object-cover"
-                            iconSize={20}
-                          />
+                        <ProductPhoto
+                          photo={product.photo}
+                          code={product.code}
+                          className="h-14 w-14 shrink-0 rounded-lg border border-border"
+                          iconSize={20}
+                        />
 
-                          <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-1">
+                          <span
+                            className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium ${
+                              product.status
+                                ? 'bg-emerald-500/10 text-emerald-600'
+                                : 'bg-muted text-muted-foreground'
+                            }`}
+                          >
                             <span
-                              className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium ${
-                                product.status
-                                  ? 'bg-emerald-500/10 text-emerald-600'
-                                  : 'bg-muted text-muted-foreground'
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                product.status ? 'bg-emerald-500' : 'bg-muted-foreground'
                               }`}
-                            >
-                              <span
-                                className={`h-1.5 w-1.5 rounded-full ${
-                                  product.status ? 'bg-emerald-500' : 'bg-muted-foreground'
-                                }`}
-                              />
-                              {product.status ? 'Ativo' : 'Inativo'}
-                            </span>
+                            />
+                            {product.status ? 'Ativo' : 'Inativo'}
+                          </span>
 
-                            <p className="mt-2 break-words text-sm font-semibold text-card-foreground">
-                              {product.description}
-                            </p>
+                          <p className="mt-2 break-words text-sm font-semibold text-card-foreground">
+                            {product.description}
+                          </p>
 
-                            <p className="mt-1 break-all text-xs text-muted-foreground">
-                              Código: {product.code}
-                            </p>
-                          </div>
+                          <p className="mt-1 break-all text-xs text-muted-foreground">
+                            Código: {product.code}
+                          </p>
                         </div>
+                      </div>
 
-                        <div className="mt-4 flex gap-2 border-t border-border pt-3">
-                          <button
-                            type="button"
-                            onClick={() => openEditModal(product)}
-                            disabled={isDeleting}
-                            className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <Pencil size={16} />
-                            Editar
-                          </button>
+                      <div className="mt-4 flex gap-2 border-t border-border pt-3">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(product)}
+                          disabled={isDeleting}
+                          className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Pencil size={16} />
+                          Editar
+                        </button>
 
-                          <button
-                            type="button"
-                            onClick={() => openDeleteModal(product)}
-                            disabled={isDeleting}
-                            className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-destructive/30 px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <Trash2 size={16} />
-                            Excluir
-                          </button>
-                        </div>
-                      </article>
-                    );
-                  })}
+                        <button
+                          type="button"
+                          onClick={() => openDeleteModal(product)}
+                          disabled={isDeleting}
+                          className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg border border-destructive/30 px-3 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <Trash2 size={16} />
+                          Excluir
+                        </button>
+                      </div>
+                    </article>
+                  ))}
                 </div>
 
                 <div className="hidden overflow-x-auto xl:block">
@@ -335,81 +301,79 @@ export default function ProductsClient() {
                     </thead>
 
                     <tbody className="divide-y divide-border">
-                      {paginatedProducts.map(product => {
-                        return (
-                          <tr key={product.id} className="transition-colors hover:bg-muted/30">
-                            <td className="px-4 py-3">
-                              <input
-                                type="checkbox"
-                                checked={selectedProductIds.includes(product.id)}
-                                onChange={() => toggleProductSelection(product.id)}
-                                disabled={isDeleting}
-                                aria-label={`Selecionar ${product.description}`}
-                                className="h-4 w-4 cursor-pointer accent-primary disabled:cursor-not-allowed"
-                              />
-                            </td>
+                      {paginatedProducts.map(product => (
+                        <tr key={product.id} className="transition-colors hover:bg-muted/30">
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedProductIds.includes(product.id)}
+                              onChange={() => toggleProductSelection(product.id)}
+                              disabled={isDeleting}
+                              aria-label={`Selecionar ${product.description}`}
+                              className="h-4 w-4 cursor-pointer accent-primary disabled:cursor-not-allowed"
+                            />
+                          </td>
 
-                            <td className="px-5 py-3">
-                              <ProductPhoto
-                                photo={product.photo}
-                                code={product.code}
-                                className="h-12 w-12 rounded-lg border border-border object-cover"
-                                iconSize={19}
-                              />
-                            </td>
+                          <td className="px-5 py-3">
+                            <ProductPhoto
+                              photo={product.photo}
+                              code={product.code}
+                              className="h-12 w-12 rounded-lg border border-border"
+                              iconSize={19}
+                            />
+                          </td>
 
-                            <td className="whitespace-nowrap px-5 py-4 text-sm font-medium text-card-foreground">
-                              {product.code}
-                            </td>
+                          <td className="whitespace-nowrap px-5 py-4 text-sm font-medium text-card-foreground">
+                            {product.code}
+                          </td>
 
-                            <td className="px-5 py-4 text-sm text-muted-foreground">
-                              {product.description}
-                            </td>
+                          <td className="px-5 py-4 text-sm text-muted-foreground">
+                            {product.description}
+                          </td>
 
-                            <td className="px-5 py-4">
+                          <td className="px-5 py-4">
+                            <span
+                              className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium ${
+                                product.status
+                                  ? 'bg-emerald-500/10 text-emerald-600'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}
+                            >
                               <span
-                                className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium ${
-                                  product.status
-                                    ? 'bg-emerald-500/10 text-emerald-600'
-                                    : 'bg-muted text-muted-foreground'
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                  product.status ? 'bg-emerald-500' : 'bg-muted-foreground'
                                 }`}
+                              />
+
+                              {product.status ? 'Ativo' : 'Inativo'}
+                            </span>
+                          </td>
+
+                          <td className="px-5 py-4">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => openEditModal(product)}
+                                title="Editar produto"
+                                aria-label={`Editar ${product.description}`}
+                                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
                               >
-                                <span
-                                  className={`h-1.5 w-1.5 rounded-full ${
-                                    product.status ? 'bg-emerald-500' : 'bg-muted-foreground'
-                                  }`}
-                                />
+                                <Pencil size={17} />
+                              </button>
 
-                                {product.status ? 'Ativo' : 'Inativo'}
-                              </span>
-                            </td>
-
-                            <td className="px-5 py-4">
-                              <div className="flex items-center justify-end gap-1">
-                                <button
-                                  type="button"
-                                  onClick={() => openEditModal(product)}
-                                  title="Editar produto"
-                                  aria-label={`Editar ${product.description}`}
-                                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                                >
-                                  <Pencil size={17} />
-                                </button>
-
-                                <button
-                                  type="button"
-                                  onClick={() => openDeleteModal(product)}
-                                  title="Excluir produto"
-                                  aria-label={`Excluir ${product.description}`}
-                                  className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                                >
-                                  <Trash2 size={17} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                              <button
+                                type="button"
+                                onClick={() => openDeleteModal(product)}
+                                title="Excluir produto"
+                                aria-label={`Excluir ${product.description}`}
+                                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                              >
+                                <Trash2 size={17} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

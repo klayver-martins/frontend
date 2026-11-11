@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState, type ReactNode } from 'react';
 
-import { getProfileService } from '@/app/services/user/get-profile-service';
 import { SESSION_EXPIRED_EVENT } from '@/app/services/api-client';
+import { getProfileService } from '@/app/services/user/get-profile-service';
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -50,7 +50,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          <p className="text-sm">Verificando sua sessão...</p>
+          <p className="text-sm">Carregando aguarde um momento...</p>
         </div>
       </div>
     );

@@ -16,7 +16,7 @@ export function InputEmail({
   autoComplete = 'email',
 }: InputEmailProps) {
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-1">
       <label htmlFor={registration.name} className="text-sm font-medium text-foreground">
         {label}
       </label>
