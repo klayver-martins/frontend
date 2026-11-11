@@ -1,22 +1,17 @@
 import type { RegisterFormData } from '@/app/schemas/register-schema';
+import { apiFetch } from '@/app/services/api-client';
 
 interface ApiErrorResponse {
   message?: string;
 }
 
 export async function registerUser(data: RegisterFormData): Promise<void> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-  if (!apiUrl) {
-    throw new Error('A URL da API não foi configurada.');
-  }
-
-  const response = await fetch(`${apiUrl}/auth/register`, {
+  const response = await apiFetch('/auth/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify(data),
   });
 
