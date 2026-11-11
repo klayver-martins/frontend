@@ -2,7 +2,6 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
@@ -15,8 +14,6 @@ import { loginUser } from '@/app/services/auth/login-service';
 import { registerUser } from '@/app/services/auth/register-service';
 
 export function RegisterForm() {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
