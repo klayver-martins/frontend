@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { apiFetch } from '@/app/services/api-client';
+import { api } from '@/app/services/api';
 
 import type { Product } from '@/app/schemas/product-schema';
 import {
@@ -67,7 +67,7 @@ export function useProducts() {
       await updateProductService(id, formData);
 
       if (status !== undefined) {
-        const response = await apiFetch(`/products/${id}`, {
+        const response = await api.put(`/products/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
