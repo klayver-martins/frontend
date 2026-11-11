@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Authentication cookies are issued by the API host. When frontend and API
- * use different hosts, they are not visible to this Next.js proxy.
- * The dashboard validates the session against /users/me through AuthGuard.
+ * Os cookies de autenticação são definidos pelo servidor da API.
+ * Quando o frontend e a API utilizam domínios diferentes,
+ * o Next.js pode não ter acesso a esses cookies.
+ *
+ * A validação da sessão é realizada pelo AuthGuard,
+ * através da rota /users/me.
  */
 export function proxy(_request: NextRequest) {
   return NextResponse.next();
